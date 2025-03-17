@@ -93,6 +93,8 @@ Under the hood, this tool uses GPT-4o to simulate how a skilled direct response 
 - Review emotional attributes like Curiosity, Clarity, Specificity, and Urgency
 
 Future versions may integrate real ad performance data to help optimise headlines based on actual CTR — stay tuned!
+
+
 """)
 
 # --- Input fields (reordered)
