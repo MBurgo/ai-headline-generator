@@ -58,10 +58,10 @@ def generate_headline_variants(input_headline, use_case, audience_insight=None):
     use_case_instruction = get_use_case_prompt(use_case)
     audience_line = f"\nAudience insight: {audience_insight.strip()}" if audience_insight else ""
 
-    context_intro = f"""You are writing a single, natural-sounding headline for an ad promoting a free stock report.
+    context_intro = f"""You are a world-class direct response copywriter. You have been tasked with writing a high-converting headline.
 
-Audience: Beginner ASX investors  
-Offer: A free report with expert stock recommendations  
+Audience: Australian share market investors  
+Offer: A new report with expert stock recommendations  
 Benefit: Spotting breakout ASX stocks before they go mainstream  
 Use case: {use_case}  
 Instruction: {use_case_instruction}{audience_line}
