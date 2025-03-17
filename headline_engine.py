@@ -4,10 +4,13 @@ import openai
 # Use Streamlit secrets for OpenAI key
 client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-def call_openai(prompt, model="gpt-4o", temperature=0.7):
+def call_openai(system_prompt, user_prompt, model="gpt-4o", temperature=0.7):
     response = client.chat.completions.create(
         model=model,
-        messages=[{"role": "user", "content": prompt}],
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ],
         temperature=temperature
     )
     return response.choices[0].message.content.strip()
@@ -45,10 +48,10 @@ Analyze this headline and score it (0 to 1) on:
 
 Return as JSON.
 
-Headline: "{headline}"
+Headline: \"{headline}\"
 """
     try:
-        response = call_openai(scoring_prompt, model="gpt-4", temperature=0)
+        response = call_openai("You are a helpful assistant.", scoring_prompt, model="gpt-4", temperature=0)
         return eval(response)
     except Exception as e:
         print("Error in scoring:", e)
@@ -56,94 +59,40 @@ Headline: "{headline}"
 
 def generate_headline_variants(input_headline, use_case, audience_insight=None):
     use_case_instruction = get_use_case_prompt(use_case)
-    audience_line = f"\nAudience insight: {audience_insight.strip()}" if audience_insight else ""
+    audience_context = audience_insight or "Not specified"
 
-    context_intro = f"""You are a world-class direct response copywriter. You have been tasked with writing a high-converting headline.
+    system_prompt = f"""
+You are a world-class direct response copywriter. You're writing short, emotionally powerful headlines using classic persuasion frameworks.
 
-Audience: Australian share market investors  
-Offer: A new report with expert stock recommendations  
-Benefit: Spotting breakout ASX stocks before they go mainstream  
-Use case: {use_case}  
-Instruction: {use_case_instruction}{audience_line}
+Context:
+- Audience: Australian share market investors
+- Offer: A new report with expert ASX stock recommendations
+- Use case: {use_case}
+- Audience insight: {audience_context}
 
-Avoid generic language like “boost your portfolio” or “unlock hidden potential.” Avoid repeating phrasing from other frameworks. Use bold, conversational, human copy that sounds like a real ad or email subject line. Prioritise curiosity, clarity, urgency, and specificity. Keep it compliant — don’t overpromise or use exaggerated claims."""
+Instructions:
+- Keep headlines bold, benefit-driven, and specific
+- Avoid clichés like \"boost your portfolio\" or vague promises
+- Each headline must match its framework’s logic and tone
+- Do not reuse phrasing across frameworks
+- Tone should match the use case — e.g. punchy for Facebook, clear for landing page
+- Return only the rewritten headline
+"""
 
-    frameworks = {
-        "AIDA": f"""{context_intro}
-
-Framework: AIDA – Attention, Interest, Desire, Action  
-Example: "This Overlooked ASX Stock Just Got a $1 Billion Boost — See Why Investors Are Rushing In Today"
-
-Now rewrite this headline using the AIDA framework:
-
-Original headline: {input_headline}
-Rewritten headline:""",
-
-        "PAS": f"""{context_intro}
-
-Framework: PAS – Problem, Agitate, Solution  
-Example: "Missing Out on ASX Gains? Here’s the Stock That Could Turn It Around Fast"
-
-Now rewrite this headline using the PAS framework:
-
-Original headline: {input_headline}
-Rewritten headline:""",
-
-        "BAB": f"""{context_intro}
-
-Framework: BAB – Before, After, Bridge  
-Example: "Stuck in underperforming ETFs? Get targeted growth with expert-backed ASX picks. Start your shift today."
-
-Now rewrite this headline using the BAB framework:
-
-Original headline: {input_headline}
-Rewritten headline:""",
-
-        "FAB": f"""{context_intro}
-
-Framework: FAB – Features, Advantages, Benefits  
-Example: "2 Expert Picks Per Month With Insights From ASX Analysts So You Can Build Wealth Smarter"
-
-Now rewrite this headline using the FAB framework:
-
-Original headline: {input_headline}
-Rewritten headline:""",
-
-        "4 U’s": f"""{context_intro}
-
-Framework: 4 U’s – Urgent, Unique, Useful, Ultra-specific  
-Example: "Last Chance: Our #1 ASX Pick for March — Backed by 237% Historical Returns"
-
-Now rewrite this headline using the 4 U’s framework:
-
-Original headline: {input_headline}
-Rewritten headline:""",
-
-        "5 P’s": f"""{context_intro}
-
-Framework: 5 P’s – Promise, Picture, Prove, Push, Personal  
-Example: "This One Stock Could Accelerate Your Portfolio — See the Track Record and Why 100,000 Aussies Already Trust Us"
-
-Now rewrite this headline using the 5 P’s framework:
-
-Original headline: {input_headline}
-Rewritten headline:""",
-
-        "Persuasion Equation": f"""{context_intro}
-
-Framework: Persuasion Equation – Urgent Problem, Unique Promise, Unquestionable Proof, User-friendly Proposition  
-Example: "Struggling to Find Reliable ASX Stocks? Our Free Report Reveals a Unique, Proven Winner — Download It Instantly"
-
-Now rewrite this headline using the Persuasion Equation:
-
-Original headline: {input_headline}
-Rewritten headline:"""
+    framework_prompts = {
+        "AIDA": f"Rewrite the following headline using the AIDA framework (Attention, Interest, Desire, Action):\n\nOriginal headline: {input_headline}\nRewritten headline:",
+        "PAS": f"Rewrite the following headline using the PAS framework (Problem, Agitate, Solution):\n\nOriginal headline: {input_headline}\nRewritten headline:",
+        "BAB": f"Rewrite the following headline using the BAB framework (Before, After, Bridge):\n\nOriginal headline: {input_headline}\nRewritten headline:",
+        "FAB": f"Rewrite the following headline using the FAB framework (Features, Advantages, Benefits):\n\nOriginal headline: {input_headline}\nRewritten headline:",
+        "4 U’s": f"Rewrite the following headline using the 4 U’s framework (Urgent, Unique, Useful, Ultra-specific):\n\nOriginal headline: {input_headline}\nRewritten headline:",
+        "5 P’s": f"Rewrite the following headline using the 5 P’s framework (Promise, Picture, Prove, Push, Personal):\n\nOriginal headline: {input_headline}\nRewritten headline:",
+        "Persuasion Equation": f"Rewrite the following headline using the Persuasion Equation (Urgent Problem, Unique Promise, Unquestionable Proof, User-friendly Proposition):\n\nOriginal headline: {input_headline}\nRewritten headline:"
     }
 
     output = []
-    for name, framework_prompt in frameworks.items():
+    for name, user_prompt in framework_prompts.items():
         try:
-            new_headline = call_openai(framework_prompt)
+            new_headline = call_openai(system_prompt, user_prompt)
             emotional_scores = score_emotions(new_headline)
         except Exception as e:
             new_headline = "Error generating headline."
