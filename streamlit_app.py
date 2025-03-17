@@ -72,17 +72,23 @@ st.write('''
             border-radius: 6px;
             font-weight: bold;
         }
+
+        .about-section {
+            margin-bottom: 2.5rem;
+        }
     </style>
 ''', unsafe_allow_html=True)
 
 # --- Title
 st.title("🧠 Burgo's Copywriting Framework Headline Rewriter")
 
-# --- Always-visible About section
+# --- Always-visible About section with spacing
 st.markdown("""
+<div class='about-section'>
+
 ### ℹ️ About This Tool
 
-This is an early-stage prototype designed to help marketers and writers brainstorm headline variations using time-tested copywriting frameworks — like AIDA, PAS, BAB, the 4U's and more.
+This is an early-stage prototype designed to help marketers and writers generate stronger headlines using time-tested copywriting frameworks — like AIDA, PAS, BAB, and more.
 
 Under the hood, this tool uses GPT-4o to simulate how a skilled direct response copywriter might rewrite and evaluate your headline for different platforms and audiences.
 
@@ -94,8 +100,8 @@ Under the hood, this tool uses GPT-4o to simulate how a skilled direct response 
 
 Future versions may integrate real ad performance data to help optimise headlines based on actual CTR — stay tuned!
 
-
-""")
+</div>
+""", unsafe_allow_html=True)
 
 # --- Input fields (reordered)
 use_case = st.selectbox(
