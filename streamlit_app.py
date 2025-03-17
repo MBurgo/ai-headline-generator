@@ -4,7 +4,7 @@ from headline_engine import generate_headline_variants
 # --- Page setup
 st.set_page_config(
     page_title="Burgo's Copywriting Framework Headline Rewriter",
-    layout="wide",
+    layout="centered",
     initial_sidebar_state="auto",
     page_icon="🧠"
 )
