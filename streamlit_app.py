@@ -77,7 +77,24 @@ st.write('''
 
 # --- Title
 st.title("🧠 Burgo's Copywriting Framework Headline Rewriter")
-st.markdown("Enter a headline and our AI will rewrite it using proven copywriting frameworks — like AIDA, PAS, BAB, and more — complete with emotional analysis.")
+
+# --- About This Tool
+with st.expander("ℹ️ About This Tool"):
+    st.markdown("""
+    This is an early-stage prototype designed to help marketers and writers generate stronger headlines using time-tested copywriting frameworks — like AIDA, PAS, BAB, and more.
+
+    Rather than relying on live ad performance data, this tool uses GPT-4o to simulate how a skilled direct response copywriter might rewrite and evaluate your headline for different platforms and audiences.
+
+    Under the hood, it's powered by a series of engineered prompts and heuristics that encourage variety, emotional leverage, and practical structure — with bonus scoring to help you compare options.
+
+    **For now, this MVP is best used to:**
+    - Generate fresh variations of your headline using 7 classic copywriting frameworks  
+    - Tailor copy to different use cases (Facebook ad, email subject line, landing page, etc.)  
+    - Inject light audience context to guide tone and appeal  
+    - Review emotional attributes like Curiosity, Clarity, Specificity, and Urgency
+
+    Future versions may integrate real ad performance data to help optimise headlines based on actual CTR — stay tuned!
+    """)
 
 # --- Input fields (reordered)
 use_case = st.selectbox(
@@ -138,4 +155,4 @@ if st.button("Generate Headline Variations"):
                     st.markdown(score_display, unsafe_allow_html=True)
 
         st.markdown("---")
-        st.caption("Powered by OpenAI · Built by you 🚀")
+        st.caption("Powered by OpenAI · Built by Burgo 🚀")
