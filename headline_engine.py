@@ -4,7 +4,7 @@ import openai
 # Use Streamlit secrets for OpenAI key
 client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-def call_openai(system_prompt, user_prompt, model="gpt-4o", temperature=0.7):
+def call_openai(system_prompt, user_prompt, model="gpt-4o", temperature=1.0):
     response = client.chat.completions.create(
         model=model,
         messages=[
